@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.9.0"><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Developer in Tencent"><title>The BackPropagation Algorithm---Neural Network | chenlingpeng</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/8.0.1/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/1.0.0/grids-responsive-min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/3.4.0/jquery.min.js"></script><link rel="icon" mask sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">The BackPropagation Algorithm---Neural Network</h1><a id="logo" href="/.">chenlingpeng</a><p class="description">hahahaha</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">The BackPropagation Algorithm---Neural Network</h1><div class="post-meta">Sep 8, 2013</div><div class="post-content"><p>原始文章见<a href="http://www.speech.sri.com/people/anand/771/html/node37.html" target="_blank" rel="noopener">这里</a></p>
+<p>Back-Propagation NN(BP，反向传播神经网络)是一种简单的含隐层(hidden layer)的神经网络，主要由两步完成对数据的训练：</p>
+<p><strong>1. 前向传播</strong></p>
+<blockquote>
+<p>前向传播主要是计算在当前的权值参数下，各个神经单元的输出。每个神经单元的输出是上一个神经单元的输出与连接边上权值的线性组合，即输入向量与权值向量的内积。而神经单元的输出则是对输入经过非线性变化的结果，通常采用sigmoid函数进行非线性变换。<br>每一层上各个神经单元的输出都作为输入输连接到下一层的神经单元</p>
+</blockquote>
+<p><strong>2. 反向反馈</strong></p>
+<blockquote>
+<p>根据前向传播计算的结果，在输出单元上，可以得到输出的误差。根据输出的误差，将其反馈给产生这些误差的神经单元中，对各个神经单元的连接权重进行调整。</p>
+</blockquote>
+<p>在介绍BP之前，先声明几个符号：</p>
+<ul>
+<li><img src="/images/img319.png" alt="Xj"> 表示单元j的输入单元向量（Xji表示输入到j的第i个单元）。</li>
+<li><img src="/images/img320.png" alt="Wj"> 表示连接到j单元上的权重向量（Wji表示单元i与单元j之间的权重）。</li>
+<li><img src="/images/img321.png" alt="Zj"> 输入到j单元上的权重</li>
+<li>Oj 表示j单元的输出（<img src="/images/img322.png" alt="Oj">）</li>
+<li>Tj 表示j单元的目标输出（由训练集中给出）</li>
+<li>Downstream(j) 表示与单元j直接相连的下一层神经单元集合</li>
+<li>Outputs 表示最后一层单元上的输出</li>
+</ul>
+<p>由于神经网络的训练过程是针对每个训练集个体的输入进行参数调整，所以这里只需要将训练集看成一个样本简化即可。这里把误差用E进行简单表示。下面介绍参数调整过程。</p>
+<p>首先，对于每一个输出单元j，我们希望计算输入权重Wji的<img src="/images/img323.png" alt="delta(E)/delta(Wij)">。</p>
+<p><img src="/images/img324.png" alt="Wji"></p>
+<p>由于无论输入到上j上的需要更新的权重是多少，<img src="/images/img325.png" alt="deltaZj">总是一样的，我们把它标记为<img src="/images/img326.png" alt="deltaj">。</p>
+<p>考虑 <img src="/images/img327.png" alt="j">，我们可以知道：</p>
+<p><img src="/images/img328.png" alt="E"></p>
+<p>对于所有的输出单元k，当k不等于j时，输出单元都与Wji想独立，所以我们可以把加和符号去掉，简单的用j上的E进行表示。</p>
+<p><img src="/images/img330.png" alt="deltaj"></p>
+<p>于是：</p>
+<p><img src="/images/img331.png" alt="deltaWji"></p>
+<p>现在考虑当j是hidden layer的单元时。我们首先观察得出以下两个重要的性质：</p>
+<ol>
+<li>对于每一个属于Downstream(j)的单元k，Zk是关于Zj的函数。</li>
+<li>同一层中除了j之外的其他所有单元l对最终错误的贡献独立于Wji</li>
+</ol>
+<p>同样，对于每一个hidden layer上的单元j，我们希望计算权重Wji的<img src="/images/img323.png" alt="delta(E)/delta(Wij)">。<br>注意到Wji影响Zj进而影响Oj进而影响<img src="/images/img333.png" alt="Zk">进而影响到了E，所以我们可以得出：</p>
+<p><img src="/images/img334.png" alt="deltaE/deltaWji"></p>
+<p>跟上面一样，我们可以把除了上式中Xji意外的项表示为<img src="/images/img326.png" alt="deltaJ">。带入得：</p>
+<p><img src="/images/img338.png" alt="deltaJ"></p>
+<p>因此可得：</p>
+<p><img src="/images/img339.png" alt="deltaJ"></p>
+<p><em><center>上式左边的k是j</center></em></p>
+<hr>
+<h2 id="算法的正式描述"><a href="#算法的正式描述" class="headerlink" title="算法的正式描述"></a>算法的正式描述</h2><ol>
+<li>创建一个包含Ni和输入单元，Nh个hidden单元，No个输出单元的神经网络.</li>
+<li>初始化各个权重Wji</li>
+<li>直到满足终止condition：</li>
+</ol>
+<blockquote>
+<p>对于每一个训练样本：</p>
+<blockquote>
+<p>根据输入计算输出</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<blockquote>
+<p>对于每一个输出单元k，计算</p>
+</blockquote>
+</blockquote>
+<p><img src="/images/img342.png" alt="deltaK"></p>
+<blockquote>
+<blockquote>
+<p>对于每一个hidden layer的单元h，计算：</p>
+</blockquote>
+</blockquote>
+<p><img src="/images/img343.png" alt="deltah"></p>
+<blockquote>
+<blockquote>
+<p>根据下面公式进行更新：</p>
+</blockquote>
+</blockquote>
+<p><img src="/images/img344.png" alt="Wji"></p>
+<p>一体化公式见下图：</p>
+<p><img src="/images/img_bp.png" alt="BP"></p>
+</div><div class="tags"><a href="/tags/neural-network/">neural network</a></div><div class="post-nav"><a class="pre" href="/2013/09/23/Restricted-Boltzmann-Machine/">Restricted Boltzmann Machine</a><a class="next" href="/2013/09/03/first-page/">first page</a></div></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><form class="search-form" action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank"><input type="text" name="q" maxlength="20" placeholder="Search"><input type="hidden" name="sitesearch" value="http://chenlingpeng.github.io"></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Distributed-System/">Distributed System</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/algorithm/">algorithm</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/lang/">lang</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/others/" style="font-size: 15px;">others</a> <a href="/tags/neural-network/" style="font-size: 15px;">neural network</a> <a href="/tags/algorithm/" style="font-size: 15px;">algorithm</a> <a href="/tags/Distributed-System/" style="font-size: 15px;">Distributed System</a> <a href="/tags/network/" style="font-size: 15px;">network</a> <a href="/tags/tcpdump/" style="font-size: 15px;">tcpdump</a> <a href="/tags/tc/" style="font-size: 15px;">tc</a> <a href="/tags/kubernetes/" style="font-size: 15px;">kubernetes</a> <a href="/tags/kubelet/" style="font-size: 15px;">kubelet</a> <a href="/tags/lang/" style="font-size: 15px;">lang</a> <a href="/tags/golang/" style="font-size: 15px;">golang</a> <a href="/tags/calico/" style="font-size: 15px;">calico</a> <a href="/tags/ebpf/" style="font-size: 15px;">ebpf</a> <a href="/tags/kernel/" style="font-size: 15px;">kernel</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/01/19/ebpf-sockhash-debug/">ebpf/sockhash 内核bug定位分析</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/08/linux-kernel-build-and-submit-patch/">linux 内核源码修改编译与patch提交</a></li><li class="post-list-item"><a class="post-list-link" href="/2020/01/07/ebpf-intro/">ebpf intro</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/02/23/k8s-service-ip-problem/">k8s service ip problem</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/04/k8s-floatingip-evolution/">k8s floatingip evolution</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/06/22/sriov-getting-start/">sriov getting start</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/18/ipvs-attempt/">ipvs attempt</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/30/iptables-quick-start/">iptables quick start</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/16/calico-getting-start/">calico getting start</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/07/tcpdump-quick-start/">tcpdump quick start</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="http://www.example1.com/" title="site-name1" target="_blank">site-name1</a><ul></ul><a href="http://www.example2.com/" title="site-name2" target="_blank">site-name2</a><ul></ul><a href="http://www.example3.com/" title="site-name3" target="_blank">site-name3</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2020 <a href="/." rel="nofollow">chenlingpeng.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css"><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
